@@ -11,124 +11,60 @@
             border: 1px black solid;
         }
     </style>
+    <script src='utils.js'></script>
+    <script src='MoGame.js'></script>
+    <script src='Block.js'></script>
+    <script src='Ball.js'></script>
+    <script src='Paddle.js'></script>
+    <script src='level.js'></script>
 </head>
 
 <body>
     <canvas id='id-canvas' width="800" height="600"></canvas>
+    <hr>
+    <input id='id-input-speed' type="range" value="1">
 </body>
+
 <script>
-    var log = console.log.bind(console)
-
-    var imageFromPath = function (path) {
-        var img = new Image()
-        img.src = path
-        return img
+    var loadLevel = function (n) {
+        n = n - 1
+        var level = levels[n]
+        var blocks = []
+        for (let i = 0; i < level.length; i++) {
+            let p = level[i]
+            let b = Block(p)
+            blocks.push(b)
+        }
+        return blocks
     }
-
-    var rectIntersects = function (a, b) {
-        if (a.y + a.image.height > b.y && a.y < b.y + b.image.height) {
-            if (a.x + a.image.width > b.x && a.x < b.x + b.image.width) {
-                return true
-            }
+    var blocks = loadLevel(1)
+    var paused = false
+    var enableDebugMode = function (enable) {
+        if (!enable) {
+            return
         }
-        return false
-    }
-
-
-    var Paddle = function () {
-        var image = imageFromPath('paddle.png')
-
-        var o = {
-            image: image,
-            x: 200,
-            y: 450,
-            speed: 8,
-        }
-        o.moveLeft = function () {
-            o.x -= o.speed
-        }
-        o.moveRight = function () {
-            o.x += o.speed
-        }
-        return o
-    }
-    var Ball = function () {
-        var image = imageFromPath('ball.png')
-
-        var o = {
-            image: image,
-            x: 100,
-            y: 250,
-            speedX: 12,
-            speedY: 12,
-            fired: false,
-        }
-        o.fire = function () {
-            o.fired = true
-        }
-        o.move = function () {
-            if (o.fired) {
-                if (o.x < 0 || o.x + o.image.width > 800) {
-                    o.speedX *= -1
-                }
-                if (o.y < 0 || o.y + o.image.height > 600) {
-                    o.speedY *= -1
-                }
-                o.x += o.speedX
-                o.y += o.speedY
-            }
-        }
-        return o
-    }
-
-    var MoGame = function () {
-        var g = {
-            actions: {},
-            keydowns: {},
-        }
-        var canvas = document.querySelector('#id-canvas')
-        var context = canvas.getContext('2d')
-        g.canvas = canvas
-        g.context = context
-        //draw
-        g.drawImage = function (MoImage) {
-            g.context.drawImage(MoImage.image, MoImage.x, MoImage.y)
-        }
-        //evnets
         window.addEventListener('keydown', function (event) {
-            g.keydowns[event.key] = true
-        })
-        window.addEventListener('keyup', function (event) {
-            g.keydowns[event.key] = false
-        })
-        //注册函数
-        g.registerAction = function (key, callback) {
-            g.actions[key] = callback
-        }
-        //timer
-        setInterval(function () {
-            //events
-            var actions = Object.keys(g.actions)
-            for (var i = 0; i < actions.length; i++) {
-                var key = actions[i]
-                if (g.keydowns[key]) {
-                    //如果按键被按下,调用注册函数
-                    g.actions[key]()
-                }
+            var k = event.key
+            if (k == 'p') {
+                paused = !paused
+            } else if ('12345678'.includes(k)) {
+                blocks = loadLevel(Number(k))
             }
-            //update
-            g.update()
-            context.clearRect(0, 0, canvas.width, canvas.height)
-            g.draw()
-        }, 1000 / 60)
-        return g
+        })
+        document.querySelector('#id-input-speed').addEventListener('input', function (event) {
+            var input = event.target
+            window.fps = input.value + 1
+            log(window.fps)
+        })
     }
 
     var _main = function () {
-        var game = MoGame()
+        enableDebugMode(true)
+        var game = MoGame(60)
 
         var paddle = Paddle()
         var ball = Ball()
+
 
         game.registerAction('a', function () {
             paddle.moveLeft()
@@ -139,17 +75,36 @@
         game.registerAction('f', function () {
             ball.fire()
         })
+
+
+
         game.update = function () {
+            if (paused) {
+                return
+            }
             ball.move()
             if (rectIntersects(ball, paddle) || rectIntersects(paddle, ball)) {
-                ball.speedY *= -1
+                ball.bounce()
+            }
+            // 判断 ball 和 block 相撞
+            for (let i = 0; i < blocks.length; i++) {
+                var block = blocks[i];
+                if (block.collide(ball)) {
+                    ball.bounce()
+                    block.kill()
+                }
             }
         }
         game.draw = function () {
             game.drawImage(paddle)
             game.drawImage(ball)
+            for (let i = 0; i < blocks.length; i++) {
+                var block = blocks[i];
+                if (block.alive) {
+                    game.drawImage(block)
+                }
+            }
         }
-
     }
     _main()
 </script>
