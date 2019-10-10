@@ -1,7 +1,9 @@
-var MoGame = function (fps) {
+var MoGame = function (fps, images, runCallBack) {
+    //images 是一个对象，里面是图片的引用名字和图片路径
     var g = {
         actions: {},
         keydowns: {},
+        images: {},
     }
     var canvas = document.querySelector('#id-canvas')
     var context = canvas.getContext('2d')
@@ -43,9 +45,40 @@ var MoGame = function (fps) {
             runloop()
         }, 1000 / window.fps)
     }
-    setTimeout(function () {
-        runloop()
-    }, 1000 / fps)
+    //预先加载所有图片
+    var loads = []
+    var names = Object.keys(images)
+    for (var i = 0; i < names.length; i++) {
+        let name = names[i];
+        var path = images[name]
+        let img = new Image()
+        img.src = path
+        img.onload = function () {
+            //存入g.images[name] = img
+            g.images[name] = img
+            //所有图片载入之后，调用 run
+            loads.push(1)
+            if (loads.length == names.length) {
+                g.run()
+            }
+        }
+    }
+    g.imageByName = function (name) {
+        var img = g.images[name]
+        var image = {
+            w: img.width,
+            w: img.height,
+            image: img,
+        }
+        return image
+    }
+    g.run = function () {
+        runCallBack(g)
+        //开始运行程序
+        setTimeout(function () {
+            runloop()
+        }, 1000 / fps)
+    }
 
     return g
 }
