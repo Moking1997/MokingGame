@@ -35,9 +35,9 @@ var blacks = []
 var _main = function () {
     var score = 0
     var images = {
-        ball: 'ball.png',
-        block: 'block.png',
-        paddle: 'paddle.png',
+        ball: 'images/ball.png',
+        block: 'images/block.png',
+        paddle: 'images/paddle.png',
     }
     var game = MoGame(30, images, function (g) {
 
@@ -75,7 +75,36 @@ var _main = function () {
                 }
             }
         }
+        // mouse event
+        var enableDrag = false
+        game.canvas.addEventListener('mousedown', function (event) {
+
+            var x = event.offsetX
+            var y = event.offsetY
+            log(x, y, ball.hasPoint(x, y))
+            if (ball.hasPoint(x, y)) {
+                enableDrag = true
+                log('down', enableDrag)
+            }
+        })
+        game.canvas.addEventListener('mousemove', function (event) {
+            var x = event.offsetX
+            var y = event.offsetY
+            if (enableDrag) {
+                ball.x = x
+                ball.y = y
+            }
+        })
+        game.canvas.addEventListener('mouseup', function (event) {
+            var x = event.offsetX
+            var y = event.offsetY
+            enableDrag = false
+        })
+
         game.draw = function () {
+            // draw background
+            game.context.fillStyle = '#666'
+            game.context.fillRect(0, 0, 800, 600)
             game.drawImage(paddle)
             game.drawImage(ball)
             for (let i = 0; i < blocks.length; i++) {
@@ -90,5 +119,6 @@ var _main = function () {
         }
     })
     enableDebugMode(game, true)
+
 }
 _main()

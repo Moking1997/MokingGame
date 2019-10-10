@@ -67,7 +67,7 @@ var MoGame = function (fps, images, runCallBack) {
         var img = g.images[name]
         var image = {
             w: img.width,
-            w: img.height,
+            h: img.height,
             image: img,
         }
         return image
