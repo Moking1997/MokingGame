@@ -1,3 +1,2 @@
-# MokingGame
+# JsGame
 
-第一期
