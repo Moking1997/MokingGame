@@ -37,7 +37,7 @@ var _main = function () {
         paddle: 'images/paddle.png',
     }
     var game = MoGame(30, images, function (g) {
-        var s = Scene(game)
+        var s = new SceneTitle(g)
         g.runWithScene(s)
     })
     enableDebugMode(game, true)
