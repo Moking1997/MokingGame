@@ -20,7 +20,7 @@ var enableDebugMode = function (game, enable) {
         if (k == 'p') {
             window.paused = !window.paused
         } else if ('12345678'.includes(k)) {
-            blocks = loadLevel(game, Number(k))
+            // blocks = loadLevel(game, Number(k))
         }
     })
     document.querySelector('#id-input-speed').addEventListener('input', function (event) {
@@ -32,12 +32,12 @@ var enableDebugMode = function (game, enable) {
 
 var _main = function () {
     var images = {
-        ball: 'images/ball.png',
-        block: 'images/block.png',
-        paddle: 'images/paddle.png',
+        bullet: 'images/bullet.png',
+        bg: 'images/bg.png',
+        player: 'images/player.png',
     }
-    var game = GuaGame.instance(60, images, function (g) {
-        var s = SceneTitle.new(g)
+    var game = GuaGame.instance(120, images, function (g) {
+        var s = Scene.new(g)
         g.runWithScene(s)
     })
     enableDebugMode(game, true)
