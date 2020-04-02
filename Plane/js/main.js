@@ -23,11 +23,6 @@ var enableDebugMode = function (game, enable) {
             // blocks = loadLevel(game, Number(k))
         }
     })
-    document.querySelector('#id-input-speed').addEventListener('input', function (event) {
-        var input = event.target
-        window.fps = input.value + 1
-        log(window.fps)
-    })
 }
 
 var _main = function () {
@@ -35,8 +30,12 @@ var _main = function () {
         bullet: 'images/bullet.png',
         bg: 'images/bg.png',
         player: 'images/player.png',
+        bullet: 'images/bullet.png',
+        enemy0: 'images/enemy0.png',
+        enemy1: 'images/enemy1.png',
+        enemy2: 'images/enemy2.png',
     }
-    var game = GuaGame.instance(120, images, function (g) {
+    var game = GuaGame.instance(60, images, function (g) {
         var s = Scene.new(g)
         g.runWithScene(s)
     })
