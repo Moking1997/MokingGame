@@ -1,26 +1,10 @@
-class GuaLabel {
-    constructor(game, text) {
-        this.game = game
-        this.text = text
-    }
-    static new(game, text) {
-        return new this(game, text)
-    }
-    draw() {
-        // console.log('draw', this.text, this.game);
-        this.game.context.fillText(this.text, 100, 190)
-    }
-    update() {
-    }
-}
-
 class GuaParticle extends GuaImage {
     constructor(game) {
         super(game, 'fire')
         this.setup()
     }
     setup() {
-        this.life = 100
+        this.life = 20
     }
     init(x, y, vx, vy) {
         this.x = x
@@ -66,7 +50,6 @@ class GuaParticleSystem {
             var vx = randomBetween(-s, s)
             var vy = randomBetween(-s, s)
             p.init(this.x, this.y, vx, vy)
-            // console.log('this.particles', this.particles);
             this.particles.push(p)
         }
         //更新所有的小火花
@@ -85,28 +68,5 @@ class GuaParticleSystem {
         for (var p of this.particles) {
             p.draw()
         }
-    }
-}
-
-class SceneTitle extends GuaScene {
-    constructor(game) {
-        super(game)
-        var label = GuaLabel.new(game, '按 k 开始游戏 , 按 o 放烟花')
-        this.addElement(label)
-
-        game.registerAction('k', function () {
-            var s = Scene.new(game)
-            game.replaceScene(s)
-        })
-        let self = this
-        this.fire()
-        game.registerAction('o', function () {
-            console.log('11')
-            self.fire()
-        })
-    }
-    fire() {
-        var ps = GuaParticleSystem.new(this.game)
-        this.addElement(ps)
     }
 }

@@ -18,3 +18,8 @@ var rectIntersects = function (a, b) {
     }
     return false
 }
+
+var randomAtoB = function (a, b) {
+    return Math.floor(Math.random() * (b - a)) + a
+}
+
